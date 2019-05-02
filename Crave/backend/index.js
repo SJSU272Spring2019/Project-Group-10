@@ -17,10 +17,7 @@ app.use(cors({origin}))
 
 //routes
 app.get("/", (req, res) => {
-    let options ={
-        args: [19,7]
-    }
-    let test = new PythonShell("./scripts/test.py", options);
+    let test = new PythonShell("./scripts/test.py");
     test.on('message', (msg) => {
         console.log(msg)
         res.send(msg)

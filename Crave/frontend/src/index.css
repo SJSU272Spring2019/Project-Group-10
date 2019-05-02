@@ -1,14 +1,85 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  font-family: 'Roboto', sans-serif;
+  /* font-family: 'Ubuntu', sans-serif; */
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+    sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+  font-family: 'Ubuntu', sans-serif,
+  /* font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", */
     monospace;
+}
+
+.headercomponent{
+  text-align: center;
+  font-family: 'Pacifico', cursive;
+  color: white;
+  padding: 15px 0;
+  background-color: rgba(192, 50, 50, 0.95);
+}
+
+.maincomponent{
+  margin: 0;
+  height: 100vh;
+  background-image:url("./public/background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.homeoptions{
+  width: 800px;
+  height: 500px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 5%;
+  margin: auto;
+  align-content: center;
+  padding: 30px;
+  box-shadow: 5px 5px 5px rgba(128, 128, 128, 0.5);
+}
+
+.hometile{
+  margin: 7px;
+  height: 205px;
+  width: 355px;
+  background-color: rgba(255, 255, 255, 0.726);
+  display: inline-block;
+  border: 0.5px solid white;
+  box-shadow: 5px 5px 5px rgba(128, 128, 128, 0.5);
+  padding: 10px;
+  cursor: pointer;
+}
+
+.hometile1{
+  background-image: url("./public/home/theusual.jpg");
+  background-repeat: no-repeat;
+  background-size: 360px 210px;
+}
+
+.hometile2{
+  background-image: url("./public/home/recommended.jpg");
+  background-repeat: no-repeat;
+  background-size: 360px 210px;
+}
+
+.hometile3{
+  background-image: url("./public/home/beverageanddessert.jpg");
+  background-repeat: no-repeat;
+  background-size: 360px 210px;
+}
+
+.hometile4{
+  background-image: url("./public/home/explorethemenu.jpg");
+  background-repeat: no-repeat;
+  background-size: 360px 210px;
+}
+
+.cardtitle{
+  font-family: 'Ubuntu', sans-serif;
+  text-shadow: 2px 2px 8px rgba(128, 128, 128, 0.6);
 }
