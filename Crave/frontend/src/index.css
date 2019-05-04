@@ -83,3 +83,154 @@ code {
   font-family: 'Ubuntu', sans-serif;
   text-shadow: 2px 2px 8px rgba(128, 128, 128, 0.6);
 }
+
+#menuCard{
+  width: 18rem;
+  height: 20rem;
+  padding-left: 0px;
+}
+
+/* .App {
+  display: flex;
+  flex-direction: row;
+} */
+
+.todos {
+  background: grey;
+  height: 100px;
+  width: 100px;
+  margin: 10px;
+}
+
+.done {
+  background: grey;
+  height: 100px;
+  width: 100px;
+  margin: 10px;
+} 
+
+.main {
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.modal2{
+  width:95%;
+  max-width: none!important;
+}
+
+.modal4{
+  width:95%;
+  max-width: none!important;
+}
+
+.card-img-top{
+  height: 150px;
+  width:200px;
+}
+
+#cartCard{
+  width: 15rem;
+}
+
+.qtyInput{
+  width:20px;
+  border: 1px solid;
+  border-color: lightgray;
+  border-radius: 25%;
+  text-align: center;
+}
+
+.sliderarrow{
+  position: fixed;
+  top: 50%;
+ 
+}
+
+.sliderCart{
+  /* position: fixed; */
+  position: relative;
+  /* top:20%;
+  left:80%; */
+  padding-left: 0%;
+  padding-right:30px;
+  
+}
+
+.card-columns{
+  padding-left: 0px;
+}
+/* 
+@keyframes slide-in {
+  100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes slide-in {
+  100% { -webkit-transform: translateX(0%); }
+} */
+
+.sliderTitle{
+  font-family:Palatino Linotype;
+  font-weight: 800;
+  font-size: 40px;
+  color: rgb(190, 94, 94);
+  -webkit-font-smoothing: antialiased;
+  margin-left: 28%;
+}
+
+.cartTitle{
+  font-family:Palatino Linotype;
+  font-weight: 600;
+  font-size: 30px;
+  color: rgb(190, 94, 94);
+  -webkit-font-smoothing: antialiased;
+}
+.trash{
+  margin-left: 20px;
+}
+
+.cartStyle{
+  color: gray;
+}
+
+.name {
+  border: 2px solid rgb(180, 178, 178);
+  border-radius: 12px;
+  width: 300px;
+  padding-left: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.number {
+  border: 2px solid rgb(180, 178, 178);
+  border-radius: 12px;
+  width: 250px;
+  padding-left: 15px;
+}
+
+.cvv {
+  border: 2px solid rgb(180, 178, 178);
+  border-radius: 12px;
+  width: 80px;
+  padding-left: 15px;
+}
+
+.Year select{
+  border: 2px solid rgb(180, 178, 178);
+  border-radius: 20px;
+  width: 70px;
+}
+
+.Month select{
+  border: 2px solid rgb(180, 178, 178);
+  border-radius: 20px;
+  width: 110px;
+}
+
+.text-center{
+  max-width: 100%;
+ 
+}
