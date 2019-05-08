@@ -1,11 +1,11 @@
 export const dessertsmenu = [
     {
         item: "Chocolate Chip Cookie",
-        desc: "Our delicious Chocolate Chip Cookie is loaded with melty chocolate chips and baked to perfection.",
+        desc: "Our delicious Chocolate Chip Cookie is loaded with melty chocolate chips ands suits both warm and cool.",
         price: "$1.50",
         qty: 0,
         image: "dessert1.png",
-        type:"dessert"
+        type: "dessert"
     },
     {
         item: "Cini Minis",
@@ -13,15 +13,15 @@ export const dessertsmenu = [
         price: "$2.35",
         qty: 0,
         image: "dessert2.png",
-        type:"dessert"
+        type: "dessert"
     },
     {
         item: "Cookie Cheesecake",
-        desc: "Cookie Cheesecake features cream-style cheesecake on an OREO® cookie-crust, blended with chunks of real OREO.",
+        desc: "Cookie Cheesecake features cream-style cheesecake on an OREO® cookie-crust, blended with chunks of real OREO good warm and cool.",
         price: "$6.20",
         qty: 0,
         image: "dessert3.png",
-        type:"dessert"
+        type: "dessert"
     },
     {
         item: "Caramel Sundae",
@@ -29,7 +29,7 @@ export const dessertsmenu = [
         price: "$4.90",
         qty: 0,
         image: "dessert4.png",
-        type:"dessert"
+        type: "dessert"
     },
     {
         item: "Dutch Apple Pie",
@@ -37,7 +37,7 @@ export const dessertsmenu = [
         price: "$5.50",
         qty: 0,
         image: "dessert5.png",
-        type:"dessert"
+        type: "dessert"
     },
     {
         item: "Vanilla Soft Serve",
@@ -45,6 +45,6 @@ export const dessertsmenu = [
         price: "$2.50",
         qty: 0,
         image: "dessert6.png",
-        type:"dessert"
+        type: "dessert"
     }
 ]

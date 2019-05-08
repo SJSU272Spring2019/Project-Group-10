@@ -37,7 +37,8 @@ export class Home extends Component {
             selectedIndex: 0,
             modalId: 0,
             carNo: '',
-            showByeMessage: false
+            showByeMessage: false,
+            isNewUser: false
         }
         this.updateBurgerCart = this.updateBurgerCart.bind(this)
         this.updateBeveragesCart = this.updateBeveragesCart.bind(this)
@@ -54,21 +55,28 @@ export class Home extends Component {
         this.handleClose = this.handleClose.bind(this)
         this.prepareUsualChoiceMenu = this.prepareUsualChoiceMenu.bind(this)
         this.prepareRecommendedMenu = this.prepareRecommendedMenu.bind(this)
+        this.prepareBevDessertsMenu = this.prepareBevDessertsMenu.bind(this)
     }
 
     componentDidMount() {
-        console.log("inside parent did mount")
         axios.get(rootUrl)
             .then((response) => {
                 console.log(response.data);
-                //See what exact value is coming in response
-                //let suggestedOrder = response.data
-                let suggestedOrder = usualchoicemenu
-                this.prepareUsualChoiceMenu(suggestedOrder)
-                this.prepareRecommendedMenu(suggestedOrder)
+                let data = response.data
+                // let usualOrder = data.modal1
+                // let recommendedOrder = data.modal2
+                // let temperature = data.temperature
+                let usualOrder = usualchoicemenu
+                let recommendedOrder = recommendedmenu
+                let temperature = 'moderate'
+                this.prepareUsualChoiceMenu(usualOrder)
+                this.prepareRecommendedMenu(recommendedOrder)
+                this.prepareBevDessertsMenu(temperature)
                 this.setState({
-                    //carNo: response.data.carNo
-                    carNo: '6ATP999'
+                    //carNo: data.car,
+                    //isNewUser: data.new_user
+                    carNo: '6ATP999',
+                    isNewUser: true
                 })
             })
     }
@@ -118,15 +126,17 @@ export class Home extends Component {
         let usualChoiceItem = []
         if (suggestedOrder && suggestedOrder.length > 0) {
             for (let i = 0; i < suggestedOrder.length; i++) {
-                let filteredChoice = []
-                for (let j = 0; j < usualChoiceItem.length; j++) {
-                    if (usualChoiceItem[j].type === suggestedOrder[i].type) {
-                        filteredChoice.push(usualChoiceItem[j])
-                    }
-                }
-                if (filteredChoice.length === 0) {
-                    usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
-                }
+                //Uncomment this if the modal 1 doesn't have one option of each type
+                // let filteredChoice = []
+                // for (let j = 0; j < usualChoiceItem.length; j++) {
+                //     if (usualChoiceItem[j].type === suggestedOrder[i].type) {
+                //         filteredChoice.push(usualChoiceItem[j])
+                //     }
+                // }
+                // if (filteredChoice.length === 0) {
+                //     usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
+                // }
+                usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
             }
         }
         this.setState({
@@ -138,15 +148,17 @@ export class Home extends Component {
         let recommenedItem = []
         if (suggestedOrder && suggestedOrder.length > 0) {
             for (let i = 0; i < suggestedOrder.length; i++) {
-                let filteredChoice = []
-                for (let j = 0; j < recommenedItem.length; j++) {
-                    if (recommenedItem[j].type === suggestedOrder[i].type) {
-                        filteredChoice.push(recommenedItem[j])
-                    }
-                }
-                if (filteredChoice.length < 2) {
-                    recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
-                }
+                //Uncomment this if the modal 2 doesn't have two options of each type
+                // let filteredChoice = []
+                // for (let j = 0; j < recommenedItem.length; j++) {
+                //     if (recommenedItem[j].type === suggestedOrder[i].type) {
+                //         filteredChoice.push(recommenedItem[j])
+                //     }
+                // }
+                // if (filteredChoice.length < 2) {
+                //     recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
+                // }
+                recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
             }
         }
         this.setState({
@@ -154,8 +166,36 @@ export class Home extends Component {
         })
     }
 
+    prepareBevDessertsMenu = (temperature) => {
+        console.log("temperature", temperature)
+        let bevDessertItem = []
+        if (temperature === 'hot') {
+            let bev = this.state.beveragesMenuItems.filter(function (item) {
+                return item.type === 'beverage_hot';
+            })
+            let dessert = this.state.dessertsMenuItems.filter(function (item) {
+                return item.desc.toLowerCase().includes('warm');
+            })
+            bevDessertItem = bev.concat(dessert)
+        }
+        else if (temperature === 'cold') {
+            let bev = this.state.beveragesMenuItems.filter(function (item) {
+                return item.type === 'beverage_cold';
+            })
+            let dessert = this.state.dessertsMenuItems.filter(function (item) {
+                return item.desc.toLowerCase().includes('cool');
+            })
+            bevDessertItem = bev.concat(dessert)
+        }
+        else {
+            bevDessertItem = this.state.beveragesMenuItems.concat(this.state.dessertsMenuItems)
+        }
+        this.setState({
+            beveragesdessertsmenuItems: bevDessertItem
+        })
+    }
+
     prepareMenuItem = (type, item_name) => {
-        console.log("inside preparemenuitem", type, item_name)
         let menuItem = ''
         switch (type) {
             case 'burger':
@@ -171,6 +211,11 @@ export class Home extends Component {
                 break;
             case 'side':
                 menuItem = this.state.sideMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                break;
+            case 'beverage':
+                menuItem = this.state.beveragesMenuItems.filter(function (item) {
                     return item.item === item_name;
                 })[0];
                 break;
@@ -330,7 +375,7 @@ export class Home extends Component {
         switch (this.state.modalId) {
             case 1:
                 cardColumns = <CardColumns>{usualMenuDetails}</CardColumns>
-                modalTitle = "The Usual/People's Choice"
+                modalTitle = this.state.isNewUser ? "Your First Time Here" : "The Usual/People's Choice"
                 break;
             case 2:
                 cardColumns = <CardColumns>{recommendedMenuDetails}</CardColumns>
@@ -353,7 +398,10 @@ export class Home extends Component {
                 <Header />
                 <div className="homeoptions">
                     <Card className="hometile hometile1" onClick={this.openModal1}>
-                        <Card.Title><span className="cardtitle">The Usual/People's Choice</span></Card.Title>
+                        <Card.Title>
+                            {this.state.isNewUser ? <span className="cardtitle">Your First Time Here</span>
+                                : <span className="cardtitle">The Usual/People's Choice</span>}
+                        </Card.Title>
                     </Card>
                     <Card className="hometile hometile2" onClick={this.openModal2}>
                         <Card.Title><span className="cardtitle">Recommended</span></Card.Title>
