@@ -122,14 +122,17 @@ code {
   max-width: none!important;
 }
 
+
 .modal4{
   width:95%;
   max-width: none!important;
 }
 
+
 .card-img-top{
   height: 150px;
   width:200px;
+  padding-top: 10px;
 }
 
 #cartCard{
@@ -230,7 +233,15 @@ code {
   width: 110px;
 }
 
-.text-center{
-  max-width: 100%;
- 
+.card-body{
+  height:200px;
+}
+
+.modal5 .modal-content{
+  background: rgb(248, 248, 248);
+  
+}
+
+.modal5 .modal-backdrop {
+  opacity: 0.5 !important;
 }

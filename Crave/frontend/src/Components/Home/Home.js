@@ -36,7 +36,8 @@ export class Home extends Component {
             selectedItem: '',
             selectedIndex: 0,
             modalId: 0,
-            cartDetails: []
+            carNo: '',
+            showByeMessage: false
         }
         this.updateBurgerCart = this.updateBurgerCart.bind(this)
         this.updateBeveragesCart = this.updateBeveragesCart.bind(this)
@@ -51,14 +52,24 @@ export class Home extends Component {
         this.openModal3 = this.openModal3.bind(this)
         this.openModal4 = this.openModal4.bind(this)
         this.handleClose = this.handleClose.bind(this)
-        this.maintainCartDetails = this.maintainCartDetails.bind(this)
+        this.prepareUsualChoiceMenu = this.prepareUsualChoiceMenu.bind(this)
+        this.prepareRecommendedMenu = this.prepareRecommendedMenu.bind(this)
     }
 
     componentDidMount() {
+        console.log("inside parent did mount")
         axios.get(rootUrl)
             .then((response) => {
                 console.log(response.data);
-                this.setState({})
+                //See what exact value is coming in response
+                //let suggestedOrder = response.data
+                let suggestedOrder = usualchoicemenu
+                this.prepareUsualChoiceMenu(suggestedOrder)
+                this.prepareRecommendedMenu(suggestedOrder)
+                this.setState({
+                    //carNo: response.data.carNo
+                    carNo: '6ATP999'
+                })
             })
     }
 
@@ -103,6 +114,82 @@ export class Home extends Component {
         })
     }
 
+    prepareUsualChoiceMenu = (suggestedOrder) => {
+        let usualChoiceItem = []
+        if (suggestedOrder && suggestedOrder.length > 0) {
+            for (let i = 0; i < suggestedOrder.length; i++) {
+                let filteredChoice = []
+                for (let j = 0; j < usualChoiceItem.length; j++) {
+                    if (usualChoiceItem[j].type === suggestedOrder[i].type) {
+                        filteredChoice.push(usualChoiceItem[j])
+                    }
+                }
+                if (filteredChoice.length === 0) {
+                    usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
+                }
+            }
+        }
+        this.setState({
+            usualchoicemenuItems: usualChoiceItem
+        })
+    }
+
+    prepareRecommendedMenu = (suggestedOrder) => {
+        let recommenedItem = []
+        if (suggestedOrder && suggestedOrder.length > 0) {
+            for (let i = 0; i < suggestedOrder.length; i++) {
+                let filteredChoice = []
+                for (let j = 0; j < recommenedItem.length; j++) {
+                    if (recommenedItem[j].type === suggestedOrder[i].type) {
+                        filteredChoice.push(recommenedItem[j])
+                    }
+                }
+                if (filteredChoice.length < 2) {
+                    recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
+                }
+            }
+        }
+        this.setState({
+            recommendedmenuItems: recommenedItem
+        })
+    }
+
+    prepareMenuItem = (type, item_name) => {
+        console.log("inside preparemenuitem", type, item_name)
+        let menuItem = ''
+        switch (type) {
+            case 'burger':
+                menuItem = this.state.burgerMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                console.log("menuItem in burger", menuItem)
+                break;
+            case 'dessert':
+                menuItem = this.state.dessertsMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                break;
+            case 'side':
+                menuItem = this.state.sideMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                break;
+            case 'beverage_hot':
+                menuItem = this.state.beveragesMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                break;
+            case 'beverage_cold':
+                menuItem = this.state.beveragesMenuItems.filter(function (item) {
+                    return item.item === item_name;
+                })[0];
+                break;
+            default:
+                break;
+        }
+        return menuItem
+    }
+
     prepareMenuDetails = (menuItems, updateMethod) => {
         let details = menuItems.map((item, index) => {
             return (
@@ -128,7 +215,6 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let burger = this.state.burgerMenuItems[selectedItem]
-        this.maintainCartDetails(burger)
         this.setState({
             selectedItem: burger
         })
@@ -138,7 +224,6 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let beverage = this.state.beveragesMenuItems[selectedItem]
-        this.maintainCartDetails(beverage)
         this.setState({
             selectedItem: beverage
         })
@@ -148,7 +233,6 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let side = this.state.sideMenuItems[selectedItem]
-        this.maintainCartDetails(side)
         this.setState({
             selectedItem: side
         })
@@ -158,38 +242,16 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let dessert = this.state.dessertsMenuItems[selectedItem]
-        this.maintainCartDetails(dessert)
         this.setState({
             selectedItem: dessert
         })
     }
 
-    maintainCartDetails = (selectedItem) => {
-        let found = this.state.cartDetails.findIndex(item => {
-            return item.item === selectedItem.item
-        })
-
-        if (found !== -1) {
-            this.state.cartDetails[found].qty = this.state.cartDetails[found].qty + 1
-        }
-        else {
-            let item =
-            {
-                item: selectedItem.item,
-                qty: 1,
-                price: selectedItem.price,
-                image: selectedItem.image
-            }
-            this.state.cartDetails.push(item)
-        }
-        console.log("maintain details", this.state.cartDetails)
-    }
 
     updateRecommendedCart = (e) => {
         e.preventDefault();
         let selectedItem = e.target.id
         let item = this.state.recommendedmenuItems[selectedItem]
-        this.maintainCartDetails(item)
         this.setState({
             selectedItem: item
         })
@@ -199,7 +261,6 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let item = this.state.usualchoicemenuItems[selectedItem]
-        this.maintainCartDetails(item)
         this.setState({
             selectedItem: item
         })
@@ -209,7 +270,6 @@ export class Home extends Component {
         e.preventDefault();
         let selectedItem = e.target.id
         let item = this.state.beveragesdessertsmenuItems[selectedItem]
-        this.maintainCartDetails(item)
         this.setState({
             selectedItem: item
         })
@@ -230,6 +290,22 @@ export class Home extends Component {
             selectedItem: '',
             selectedIndex: parseInt(index) + 1
         })
+    }
+
+    callbackFromCart = () => {
+        this.setState({
+            selectedItem: '',
+            selectedIndex: 0,
+            modalId: 0,
+            showModal: false,
+            showByeMessage: true
+        })
+
+        setTimeout(() => {
+            this.setState({ showByeMessage: false });
+        }, 5000);
+
+        this.props.history.push('/')
     }
 
     render() {
@@ -307,13 +383,18 @@ export class Home extends Component {
                             </Col>
                             <Col sm={2} className="sliderCart">
 
-                                <Cart cartItem={this.state.selectedItem} cartDetails={this.state.cartDetails}></Cart>
+                                <Cart cartItem={this.state.selectedItem} resetState={this.callbackFromCart} carNo={this.state.carNo}></Cart>
 
                             </Col>
 
                         </Row>
                     </Modal.Body>
 
+                </Modal>
+                <Modal show={this.state.showByeMessage} onHide={this.handleClose} centered>
+                    <Modal.Body>
+                        <p>Collect your meal. Have a good day!!</p>
+                    </Modal.Body>
                 </Modal>
 
             </div>

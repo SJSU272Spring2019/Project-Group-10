@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Row, Media, Col, Button, Modal, Form } from 'react-bootstrap';
+import { rootUrl } from '../../config/settings';
+import axios from 'axios';
 
 const tax = 9.5
+var globalCart = []
 
 export class Cart extends Component {
   constructor(props) {
@@ -34,9 +37,10 @@ export class Cart extends Component {
 
   componentDidMount() {
     this.setState({
-      cartItems: this.state.cartItems.concat(this.props.cartDetails)
+      cartItems: globalCart
     })
     console.log("inside did mount", this.state.cartItems, this.props.cartDetails)
+    console.log("gloabl cart", globalCart)
   }
 
 
@@ -130,14 +134,44 @@ export class Cart extends Component {
 
   pay = (e) => {
     e.preventDefault()
+    console.log("cart in pay", globalCart)
+    console.log("carno in pay", this.props.carNo)
+    let cart = []
+    for (let i = 0; i < globalCart.length; i++) {
+      cart.push({
+        car: this.props.carNo,
+        item: globalCart[i].item,
+        qty: globalCart[i].qty,
+        type: globalCart[i].type
+      })
+    }
     const data = {
       name: this.state.cardname,
       number: this.state.cardnumber,
       cvv: this.state.cvv,
       month: this.state.month,
-      year: this.state.year
+      year: this.state.year,
+      cart: cart
     }
     console.log("payment details", data)
+    axios.post(rootUrl, data)
+      .then((response) => {
+        console.log(response.data);
+        //Uncomment this after integration
+        // globalCart = []
+        // this.setState({
+        //   cardname: '',
+        //   cardnumber: '',
+        //   cvv: '',
+        //   month: '',
+        //   year: '',
+        //   showModal5: false,
+        //   fromDiffComponent: false,
+        //   cartItems: []
+        // })
+        // this.props.resetState()
+      })
+    globalCart = []
     this.setState({
       cardname: '',
       cardnumber: '',
@@ -145,16 +179,15 @@ export class Cart extends Component {
       month: '',
       year: '',
       showModal5: false,
-      fromDiffComponent: false
+      fromDiffComponent: false,
+      cartItems: []
     })
+    this.props.resetState()
   }
 
   render() {
     let selectedItem = this.props.cartItem
     console.log("inside render", selectedItem)
-    for (let i = 0; i < this.state.cartItems.length; i++) {
-      console.log("item", this.state.cartItems[i])
-    }
     if (selectedItem !== "" && this.state.fromDiffComponent) {
       let found = this.state.cartItems.findIndex(item => {
         return item.item === selectedItem.item
@@ -163,6 +196,7 @@ export class Cart extends Component {
       if (found !== -1) {
         console.log("inside found", this.state.cartItems[found].qty, found)
         this.state.cartItems[found].qty = this.state.cartItems[found].qty + 1
+        globalCart = this.state.cartItems
       }
       else {
         console.log("inside else")
@@ -174,6 +208,7 @@ export class Cart extends Component {
           image: selectedItem.image
         }
         this.state.cartItems.push(item)
+        globalCart = this.state.cartItems
       }
     }
     console.log("cart items", this.state.cartItems)
@@ -257,24 +292,25 @@ export class Cart extends Component {
             <Form onSubmit={this.pay}>
               <Row>
                 <Col sm={4}>Card Holder Name: </Col>
-                <Col sm={8}><input type="text" className="name" placeholder="Card Holder Name" onChange={this.nameHandler}></input></Col>
+                <Col sm={8}><input type="text" className="name" placeholder="Card Holder Name" onChange={this.nameHandler} required></input></Col>
               </Row>
               <br />
               <Row>
                 <Col sm={4}>Card Number: </Col>
-                <Col sm={8}><input type="number" className="number" placeholder="Card Number" onChange={this.cardnumberHandler} maxlength="16"></input></Col>
+                <Col sm={8}><input type="number" className="number" placeholder="Card Number" onChange={this.cardnumberHandler} max="9999999999999999" required></input></Col>
               </Row>
               <br />
               <Row>
                 <Col sm={4}>CVV: </Col>
-                <Col sm={8}><input type="number" className="cvv" placeholder="CVV" onChange={this.cvvHandler} maxlength="4"></input></Col>
+                <Col sm={8}><input type="number" className="cvv" placeholder="CVV" onChange={this.cvvHandler} max="9999" required></input></Col>
               </Row>
               <br />
               <Row>
                 <Col sm={4}> Valid Till</Col>
                 <Col sm={3}>
                   <div className="Month">
-                    <select name="Month" onChange={this.monthHandler}>
+                    <select name="Month" onChange={this.monthHandler} required>
+                      <option value="">Month</option>
                       <option value="january">January</option>
                       <option value="february">February</option>
                       <option value="march">March</option>
@@ -293,7 +329,8 @@ export class Cart extends Component {
                 <Col sm={1}></Col>
                 <Col sm={3}>
                   <div className="Year">
-                    <select name="Year" onChange={this.yearHandler}>
+                    <select name="Year" onChange={this.yearHandler} required>
+                      <option value="">Year</option>
                       <option value="2016">2016</option>
                       <option value="2017">2017</option>
                       <option value="2018">2018</option>
