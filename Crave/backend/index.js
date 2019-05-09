@@ -35,7 +35,7 @@ let popBev = {}
 let popSid = {}
 let popDes = {}
 
-let cnt = 2;
+let cnt = 1;
 let car = "";
 let cars = ["", 'car1.jpg', 'car2.jpg', 'car3.jpg', 'car4.jpg', 'car5.jpg'];
 
@@ -72,6 +72,7 @@ app.get("/", (req, res) => {
                     if(res1!=={}){
                         returnObj.modal1.push({ type: "burger", name: res1.item})
                         returnObj.modal2.push({ type: "burger", name: res1.item})
+                        fillmodal2({ type: "burger", name: res1.item })
                     }
                     Order.findOne({
                         $and: [{ "car": car }, {
@@ -81,56 +82,30 @@ app.get("/", (req, res) => {
                             if(res2!=={}){
                                 returnObj.modal1.push({ type: "beverage", name: res2.item })
                                 returnObj.modal2.push({ type: "beverage", name: res2.item })
+                                fillmodal2({ type: "beverage", name: res2.item })
                             }
                             Order.findOne({ car, "type": "side" }, 'item', { sort: '-qty' }, (err, res3) => {
                                 if(res3!=={}){
                                     returnObj.modal1.push({ type: "side", name: res3.item })
                                     returnObj.modal2.push({ type: "side", name: res3.item })
+                                    fillmodal2({ type: "side", name: res3.item })
                                 }
                                 Order.findOne({ car, "type": "dessert" }, 'item', { sort: '-qty' }, (err, res4) => {
                                     if(res4!=={}){
                                         returnObj.modal1.push({ type: "dessert", name: res4.item })
                                         returnObj.modal2.push({ type: "dessert", name: res4.item })
+                                        fillmodal2({ type: "dessert", name: res4.item })
                                     }
-                                    res.json(returnObj);
-                                    new Promise((resolve, reject) => {
-                                        for (m of returnObj.modal2) {
-                                            if (m.type === "burger") {
-                                                Order.aggregate([{
-                                                    $match: { type: "burger" },
-                                                }, {
-                                                    $group: {
-                                                        _id: "$item",
-                                                        total: {
-                                                            $sum: "$qty"
-                                                        }
-                                                    }
-                                                }, {
-                                                    $sort: { "total": -1 }
-                                                }, {
-                                                    $limit: 2
-                                                }], (err, res) => {
-                                                    if (m.name === res[0]._id) {
-                                                        console.log(res[1]._id)
-                                                        returnObj.modal2.push({ type: "burger", name: res[1]._id })
-                                                    }
-                                                    else {
-                                                        console.log(res[0]._id)
-                                                        returnObj.modal2.push({ type: "burger", name: res[0]._id })
-                                                    }
-                                                });
-                                            }
-                                            else if (m.type === "side") {
-                                            }
-                                            else if (m.type === "beverage") { }
-                                            else if (m.type === "dessert") { }
-                                        }
-                                        resolve(returnObj)
-                                        .then((value) => {
-                                            res.json(value)
-                                        })
-                                        .catch((err))
-                                    })
+                                    res.json(returnObj)
+                                    returnObj = {}
+                                    returnObj.modal1 = []
+                                    returnObj.modal2 = []
+                                    popBur = {}
+                                    popBev = {}
+                                    popSid = {}
+                                    popDes = {}
+                                    cnt++;
+                                    car = "";
                                 })
                             })
                     })
@@ -147,31 +122,42 @@ app.get("/", (req, res) => {
                 returnObj.modal2.push(popBev)
                 returnObj.modal2.push(popSid)
                 returnObj.modal2.push(popDes)
-                returnObj.modal2.push(fillmodal2(returnObj.modal2))
-                console.log("--------------------")
+                fillmodal2(popBur)
+                fillmodal2(popBev)
+                fillmodal2(popSid)
+                fillmodal2(popDes)
+
                 console.log(returnObj)
                 res.json(returnObj)
                 returnObj = {}
+                returnObj.modal1 = []
+                returnObj.modal2 = []
+                popBur = {}
+                popBev = {}
+                popSid = {}
+                popDes = {}
+                cnt++;
+                car = "";
             }
         })
     })
 });
 
 app.post("/", (req, res) => {
-    let order = new Order({
-        car: "EA7THE",
-        item: "Chocolate Chip Cookie",
-        qty: 0,
-        type: "dessert"
-    })
-    Order.findOneAndUpdate({ car:order.car, item:order.item, type: order.type }, { $inc: { "qty" : order.qty } }, { upsert: true} ,  (err) => {
-        if(err) res.send(err)
-        else res.send("success");
-    })
-
+    for(data of req.body.cart){
+        let order = new Order({
+            car: car ,
+            item: data.item,
+            qty: data.qty,
+            type: data.type
+        })
+        Order.findOneAndUpdate({ car:order.car, item:order.item, type: order.type }, { $inc: { "qty" : order.qty } }, { upsert: true} ,  (err) => {
+            if(err) res.send("error")
+        })
+    }
     // cnt++;
     // car = "";
-    // res.send(String(cnt))
+    res.send({message:"success", data: cnt })
 })
 
 app.listen(server.port, () => console.log("Server listening on port ",server.port))
@@ -192,7 +178,6 @@ function popularBurger() {
     }, {
         $limit: 1
     }], (err, res) => {
-        // console.log(res)
         popBur =  { type: "burger", name: res[0]._id }
     });
 }
@@ -212,7 +197,6 @@ function popularBeverage() {
     },{
         $limit: 1
     }], (err, res) => { 
-        // console.log(res)
         popBev = { type: "beverage", name: res[0]._id }
     });
 }
@@ -232,7 +216,6 @@ function popularSide(){
     }, {
         $limit: 1
     }], (err, res) => {
-        // console.log(res)
         popSid = { type: "side", name: res[0]._id }
     });
 }
@@ -252,42 +235,100 @@ function popularDessert(){
     }, {
         $limit: 1
     }], (err, res) => {
-        // console.log(res)
         popDes = { type: "dessert", name: res[0]._id }
     });
 }
 
-function fillmodal2(modal2, res){
-    let aprioriData = []
-    for(m of modal2){
-        if(m.type==="burger"){
-            Order.aggregate([{
-                $match: { type: "burger" },
-            }, {
-                $group: {
-                    _id: "$item",
-                    total: {
-                        $sum: "$qty"
-                    }
-                }
-            }, {
-                $sort: { "total": -1 }
-            }, {
-                $limit: 2
-            }], (err, res) => {
-                console.log("result is---------------")
-                if(m.name===res[0]._id){ 
-                    aprioriData.push({ type: "burger", name:res[1]._id}) 
-                }
-                else { 
-                    aprioriData.push({ type: "burger", name:res[0]._id}) 
-                }
-            });
-        }
-        else if(m.type==="side"){
-        }
-        else if(m.type==="beverage"){}
-        else if(m.type==="dessert"){}
+function fillmodal2(data){
+    if (data.type === "burger" && data.name ==="Angry Whooper"){
+        returnObj.modal2.push({ type: "burger", name: "Sourdough King"})
+    }
+    if (data.type === "burger" && data.name ==="Big Fish"){
+        returnObj.modal2.push({ type: "burger", name: "Crispy Chicken"})
+    }
+    if (data.type === "burger" && data.name ==="Crispy Chicken"){
+        returnObj.modal2.push({ type: "burger", name: "Big Fish"})
+    }
+    if (data.type === "burger" && data.name ==="Cheeseburger"){
+        returnObj.modal2.push({ type: "burger", name: "Crispy Chicken"})
+    }
+    if (data.type === "burger" && data.name ==="Chicken Club"){
+        returnObj.modal2.push({ type: "burger", name: "Angry Whooper"})
+    }
+    if (data.type === "burger" && data.name ==="Sourdough King"){
+        returnObj.modal2.push({ type: "burger", name: "Angry Whooper"})
+    }
+    if (data.type === "burger" && data.name ==="Hamburger"){
+        returnObj.modal2.push({ type: "burger", name: "Big Fish"})
+    }
+    if(data.type==="burger" && data.name==="Q-Pound King"){
+        returnObj.modal2.push({ type: "burger", name: "Big Fish"})
+    }
+    if(data.type==="burger" && data.name==="Q-Pound King"){
+        returnObj.modal2.push({ type: "burger", name: "Crispy Chicken"})
+    }
+    if (data.type === "beverage" && data.name ==="Mocha"){
+        returnObj.modal2.push({ type: "beverage", name: "Cappuccino"})
+    }
+    if (data.type === "beverage" && data.name ==="Espresso"){
+        returnObj.modal2.push({ type: "beverage", name: "Hot Chocolate"})
+    }
+    if (data.type === "beverage" && data.name ==="Hot Chocolate"){
+        returnObj.modal2.push({ type: "beverage", name: "Mocha"})
+    }
+    if (data.type === "beverage" && data.name ==="Cappuccino"){
+        returnObj.modal2.push({ type: "beverage", name: "Hello"})
+    }
+    if (data.type === "beverage" && data.name ==="Iced Tea"){
+        returnObj.modal2.push({ type: "beverage", name: "Coca-cola"})
+    }
+    if (data.type === "beverage" && data.name ==="Coca-cola"){
+        returnObj.modal2.push({ type: "beverage", name: "Iced Tea"})
+    }
+    if (data.type === "beverage" && data.name ==="Caramel Frappuccino"){
+        returnObj.modal2.push({ type: "beverage", name: "Caramel Frappuccino"})
+    }
+    if (data.type === "beverage" && data.name ==="Cold Brew"){
+        returnObj.modal2.push({ type: "beverage", name: "Caramel Frappuccino"})
+    }
+    if (data.type === "beverage" && data.name ==="Chocolate Shake"){
+        returnObj.modal2.push({ type: "beverage", name: "Caramel Frappuccino"})
+    }
+    if (data.type === "side" && data.name ==="Chicken Nuggets"){
+        returnObj.modal2.push({ type: "side", name: "Bacon Cheesy Tots"})
+    }
+    if (data.type === "side" && data.name ==="Bacon Cheesy Tots"){
+        returnObj.modal2.push({ type: "side", name: "Chicken Nuggets"})
+    }
+    if (data.type === "side" && data.name ==="Hash Browns"){
+        returnObj.modal2.push({ type: "side", name: "French Fries"})
+    }
+    if (data.type === "side" && data.name ==="Garden Side Salad"){
+        returnObj.modal2.push({ type: "side", name: "Onion Rings"})
+    }
+    if (data.type === "side" && data.name ==="French Fries"){
+        returnObj.modal2.push({ type: "side", name: "Onion Rings"})
+    }
+    if (data.type === "side" && data.name ==="Onion Rings"){
+        returnObj.modal2.push({ type: "side", name: "French Fries"})
+    }
+    if (data.type === "dessert" && data.name === "Chocolate Chip Cookie"){
+        returnObj.modal2.push({ type: "dessert", name: "Cookie Cheesecake"})
+    }
+    if (data.type === "dessert" && data.name === "Cini Minis"){
+        returnObj.modal2.push({ type: "dessert", name: "Chocolate Chip Cookie"})
+    }
+    if (data.type === "dessert" && data.name === "Cookie Cheesecake"){
+        returnObj.modal2.push({ type: "dessert", name: "Chocolate Chip Cookie"})
+    }
+    if (data.type === "dessert" && data.name === "Caramel Sundae"){
+        returnObj.modal2.push({ type: "dessert", name: "Vanilla Soft Serve"})
+    }
+    if (data.type === "dessert" && data.name === "Dutch Apple Pie"){
+        returnObj.modal2.push({ type: "dessert", name: "Caramel Sundae"})
+    }
+    if (data.type === "dessert" && data.name === "Vanilla Soft Serve"){
+        returnObj.modal2.push({ type: "dessert", name: "Caramel Sundae"})
     }
 }
 
@@ -296,3 +337,55 @@ function fillmodal2(modal2, res){
 // BB7D618  yes 
 // EA7THE   yes
 // 4SZW590  no
+
+
+
+// new Promise((resolve, reject) => {
+
+//     if (check) {
+//         for (m of returnObj.modal2) {
+//             if (m.type === "burger") {
+//                 Order.aggregate([{
+//                     $match: { type: "burger" },
+//                 }, {
+//                     $group: {
+//                         _id: "$item",
+//                         total: {
+//                             $sum: "$qty"
+//                         }
+//                     }
+//                 }, {
+//                     $sort: { "total": -1 }
+//                 }, {
+//                     $limit: 2
+//                 }], (err, res) => {
+//                     if (m.name === res[0]._id) {
+//                         console.log(res[1]._id)
+//                         returnObj.modal2.push({ type: "burger", name: res[1]._id })
+//                         console.log(returnObj.modal2)
+//                     }
+//                     else {
+//                         console.log(res[0]._id)
+//                         returnObj.modal2.push({ type: "burger", name: res[0]._id })
+//                         console.log(returnObj.modal2)
+//                     }
+//                 });
+//             }
+//             else if (m.type === "side") { }
+//             else if (m.type === "beverage") { }
+//             else if (m.type === "dessert") { }
+//         }
+//         check = false;
+//     }
+//     console.log("Check before", check)
+//     if (check === false) {
+//         console.log("Check:---", check)
+//         resolve(returnObj)
+//     }
+// })
+//     .then((value) => {
+//         console.log("--------------------------")
+//         console.log(returnObj)
+//         res.json(returnObj)
+//     })
+//     .catch((err))
