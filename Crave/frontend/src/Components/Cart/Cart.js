@@ -39,8 +39,8 @@ export class Cart extends Component {
     this.setState({
       cartItems: globalCart
     })
-    console.log("inside did mount", this.state.cartItems, this.props.cartDetails)
-    console.log("gloabl cart", globalCart)
+    //console.log("inside did mount", this.state.cartItems, this.props.cartDetails)
+    //console.log("gloabl cart", globalCart)
   }
 
 
@@ -134,8 +134,8 @@ export class Cart extends Component {
 
   pay = (e) => {
     e.preventDefault()
-    console.log("cart in pay", globalCart)
-    console.log("carno in pay", this.props.carNo)
+    //console.log("cart in pay", globalCart)
+    //console.log("carno in pay", this.props.carNo)
     let cart = []
     for (let i = 0; i < globalCart.length; i++) {
       cart.push({
@@ -153,53 +153,53 @@ export class Cart extends Component {
       year: this.state.year,
       cart: cart
     }
-    console.log("payment details", data)
+    //console.log("payment details", data)
     axios.post(rootUrl, data)
       .then((response) => {
-        console.log(response.data);
-        //Uncomment this after integration
-        // globalCart = []
-        // this.setState({
-        //   cardname: '',
-        //   cardnumber: '',
-        //   cvv: '',
-        //   month: '',
-        //   year: '',
-        //   showModal5: false,
-        //   fromDiffComponent: false,
-        //   cartItems: []
-        // })
-        // this.props.resetState()
+        // console.log(response.data);
+        globalCart = []
+        this.setState({
+          cardname: '',
+          cardnumber: '',
+          cvv: '',
+          month: '',
+          year: '',
+          showModal5: false,
+          fromDiffComponent: false,
+          cartItems: []
+        })
+        this.props.resetState()
       })
-    globalCart = []
-    this.setState({
-      cardname: '',
-      cardnumber: '',
-      cvv: '',
-      month: '',
-      year: '',
-      showModal5: false,
-      fromDiffComponent: false,
-      cartItems: []
-    })
-    this.props.resetState()
+    //This was before integration  
+    // globalCart = []
+    // this.setState({
+    //   cardname: '',
+    //   cardnumber: '',
+    //   cvv: '',
+    //   month: '',
+    //   year: '',
+    //   showModal5: false,
+    //   fromDiffComponent: false,
+    //   cartItems: []
+    // })
+    // this.props.resetState()
   }
 
   render() {
     let selectedItem = this.props.cartItem
-    console.log("inside render", selectedItem)
+    //console.log("inside render", selectedItem)
     if (selectedItem !== "" && this.state.fromDiffComponent) {
       let found = this.state.cartItems.findIndex(item => {
         return item.item === selectedItem.item
       })
 
       if (found !== -1) {
-        console.log("inside found", this.state.cartItems[found].qty, found)
+        //console.log("inside found", this.state.cartItems[found].qty, found)
         this.state.cartItems[found].qty = this.state.cartItems[found].qty + 1
         globalCart = this.state.cartItems
       }
       else {
-        console.log("inside else")
+        // console.log("inside else")
         let item =
         {
           item: selectedItem.item,
@@ -211,14 +211,14 @@ export class Cart extends Component {
         globalCart = this.state.cartItems
       }
     }
-    console.log("cart items", this.state.cartItems)
+    // console.log("cart items", this.state.cartItems)
     this.state.fromDiffComponent = true
     let total = 0;
     let calPrice = 0;
     let details = this.state.cartItems.map((cartItem, index) => {
       calPrice = calPrice + (parseInt(cartItem.qty) * parseFloat(cartItem.price.substring(1)))
       total = calPrice.toFixed(2);
-      console.log("inside map", parseInt(cartItem.qty), parseInt(cartItem.price.substring(1)), total)
+      //console.log("inside map", parseInt(cartItem.qty), parseInt(cartItem.price.substring(1)), total)
       return (
 
         <Row>
@@ -241,7 +241,7 @@ export class Cart extends Component {
 
       )
     })
-    console.log("total", total)
+    // console.log("total", total)
     let finalPrice = (parseFloat(total) + (parseFloat(total) * 0.095)).toFixed(2)
     let paymentDetail = ''
     if (details.length) {
@@ -297,12 +297,12 @@ export class Cart extends Component {
               <br />
               <Row>
                 <Col sm={4}>Card Number: </Col>
-                <Col sm={8}><input type="number" className="number" placeholder="Card Number" onChange={this.cardnumberHandler} max="9999999999999999" required></input></Col>
+                <Col sm={8}><input type="text" className="number" placeholder="Card Number" onChange={this.cardnumberHandler} pattern="^[0-9]{16}$" required></input></Col>
               </Row>
               <br />
               <Row>
                 <Col sm={4}>CVV: </Col>
-                <Col sm={8}><input type="number" className="cvv" placeholder="CVV" onChange={this.cvvHandler} max="9999" required></input></Col>
+                <Col sm={8}><input type="text" className="cvv" placeholder="CVV" onChange={this.cvvHandler} pattern="^[0-9]{3,4}$" required></input></Col>
               </Row>
               <br />
               <Row>

@@ -5,7 +5,8 @@ export const beveragesmenu = [
         price: "$4.99",
         qty: 0,
         image: "hot5.png",
-        type:"beverage_hot"
+        type:"beverage",
+        category:"hot"
     },
     {
         item: "Espresso",
@@ -13,7 +14,8 @@ export const beveragesmenu = [
         price: "$3.50",
         qty: 0,
         image: "hot1.png",
-        type:"beverage_hot"
+        type:"beverage",
+        category:"hot"
     },
     {
         item: "Hot Chocolate",
@@ -21,7 +23,9 @@ export const beveragesmenu = [
         price: "$5.39",
         qty: 0,
         image: "hot3.png",
-        type:"beverage_hot"
+        type:"beverage",
+        category:"hot"
+        
     },
     {
         item: "Cappuccino",
@@ -29,7 +33,8 @@ export const beveragesmenu = [
         price: "$5.99",
         qty: 0,
         image: "hot4.png",
-        type:"beverage_hot"
+        type:"beverage",
+        category:"hot"
     },
     {
         item: "Iced Tea",
@@ -37,7 +42,8 @@ export const beveragesmenu = [
         price: "$3.99",
         qty: 0,
         image: "cold1.png",
-        type:"beverage_cold"
+        type:"beverage",
+        category:"cold"
     },
     {
         item: "Coca-cola",
@@ -45,7 +51,8 @@ export const beveragesmenu = [
         price: "$1.99",
         qty: 0,
         image: "cold2.png",
-        type:"beverage_cold"
+        type:"beverage",
+        category:"cold"
     },
     {
         item: "Caramel Frappuccino",
@@ -53,7 +60,8 @@ export const beveragesmenu = [
         price: "$6.99",
         qty: 0,
         image: "cold3.png",
-        type:"beverage_cold"
+        type:"beverage",
+        category:"cold"
     },
     {
         item: "Cold Brew",
@@ -61,7 +69,8 @@ export const beveragesmenu = [
         price: "$4.65",
         qty: 0,
         image: "cold4.png",
-        type:"beverage_cold"
+        type:"beverage",
+        category:"cold"
     },
     {
         item: "Chocolate Shake",
@@ -69,6 +78,7 @@ export const beveragesmenu = [
         price: "$3.75",
         qty: 0,
         image: "cold5.png",
-        type:"beverage_cold"
+        type:"beverage",
+        category:"cold"
     }
 ]

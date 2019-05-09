@@ -61,22 +61,24 @@ export class Home extends Component {
     componentDidMount() {
         axios.get(rootUrl)
             .then((response) => {
-                console.log(response.data);
+                //console.log(response.data);
+                console.log("Car Number is : ", response.data.car);
+                console.log("weather is : ", response.data.weather);
+                console.log("Temperature is : ", response.data.temperature);
                 let data = response.data
-                // let usualOrder = data.modal1
-                // let recommendedOrder = data.modal2
-                // let temperature = data.temperature
-                let usualOrder = usualchoicemenu
-                let recommendedOrder = recommendedmenu
-                let temperature = 'moderate'
+                let usualOrder = data.modal1
+                let recommendedOrder = data.modal2
+                let temperature = data.temperature
+                let weather = data.weather
+                // let usualOrder = usualchoicemenu
+                // let recommendedOrder = recommendedmenu
+                // let temperature = 'moderate'
                 this.prepareUsualChoiceMenu(usualOrder)
                 this.prepareRecommendedMenu(recommendedOrder)
-                this.prepareBevDessertsMenu(temperature)
+                this.prepareBevDessertsMenu(weather)
                 this.setState({
-                    //carNo: data.car,
-                    //isNewUser: data.new_user
-                    carNo: '6ATP999',
-                    isNewUser: true
+                    carNo: data.car,
+                    isNewUser: data.new_user
                 })
             })
     }
@@ -127,16 +129,16 @@ export class Home extends Component {
         if (suggestedOrder && suggestedOrder.length > 0) {
             for (let i = 0; i < suggestedOrder.length; i++) {
                 //Uncomment this if the modal 1 doesn't have one option of each type
-                // let filteredChoice = []
-                // for (let j = 0; j < usualChoiceItem.length; j++) {
-                //     if (usualChoiceItem[j].type === suggestedOrder[i].type) {
-                //         filteredChoice.push(usualChoiceItem[j])
-                //     }
-                // }
-                // if (filteredChoice.length === 0) {
-                //     usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
-                // }
-                usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
+                let filteredChoice = []
+                for (let j = 0; j < usualChoiceItem.length; j++) {
+                    if (usualChoiceItem[j].type === suggestedOrder[i].type) {
+                        filteredChoice.push(usualChoiceItem[j])
+                    }
+                }
+                if (filteredChoice.length === 0) {
+                    usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
+                }
+                //usualChoiceItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
             }
         }
         this.setState({
@@ -149,16 +151,16 @@ export class Home extends Component {
         if (suggestedOrder && suggestedOrder.length > 0) {
             for (let i = 0; i < suggestedOrder.length; i++) {
                 //Uncomment this if the modal 2 doesn't have two options of each type
-                // let filteredChoice = []
-                // for (let j = 0; j < recommenedItem.length; j++) {
-                //     if (recommenedItem[j].type === suggestedOrder[i].type) {
-                //         filteredChoice.push(recommenedItem[j])
-                //     }
-                // }
-                // if (filteredChoice.length < 2) {
-                //     recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].item))
-                // }
-                recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
+                let filteredChoice = []
+                for (let j = 0; j < recommenedItem.length; j++) {
+                    if (recommenedItem[j].type === suggestedOrder[i].type) {
+                        filteredChoice.push(recommenedItem[j])
+                    }
+                }
+                if (filteredChoice.length < 2) {
+                    recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
+                }
+                //recommenedItem.push(this.prepareMenuItem(suggestedOrder[i].type, suggestedOrder[i].name))
             }
         }
         this.setState({
@@ -167,23 +169,23 @@ export class Home extends Component {
     }
 
     prepareBevDessertsMenu = (temperature) => {
-        console.log("temperature", temperature)
+        //console.log("temperature", temperature)
         let bevDessertItem = []
         if (temperature === 'hot') {
             let bev = this.state.beveragesMenuItems.filter(function (item) {
-                return item.type === 'beverage_hot';
+                return item.category === 'cold';
             })
             let dessert = this.state.dessertsMenuItems.filter(function (item) {
-                return item.desc.toLowerCase().includes('warm');
+                return item.desc.toLowerCase().includes('cool');
             })
             bevDessertItem = bev.concat(dessert)
         }
         else if (temperature === 'cold') {
             let bev = this.state.beveragesMenuItems.filter(function (item) {
-                return item.type === 'beverage_cold';
+                return item.category === 'hot';
             })
             let dessert = this.state.dessertsMenuItems.filter(function (item) {
-                return item.desc.toLowerCase().includes('cool');
+                return item.desc.toLowerCase().includes('warm');
             })
             bevDessertItem = bev.concat(dessert)
         }
@@ -202,7 +204,7 @@ export class Home extends Component {
                 menuItem = this.state.burgerMenuItems.filter(function (item) {
                     return item.item === item_name;
                 })[0];
-                console.log("menuItem in burger", menuItem)
+                //console.log("menuItem in burger", menuItem)
                 break;
             case 'dessert':
                 menuItem = this.state.dessertsMenuItems.filter(function (item) {
@@ -330,7 +332,7 @@ export class Home extends Component {
 
     slideRight = (e) => {
         let index = e.target.id
-        console.log("inside slideRight", index)
+        //console.log("inside slideRight", index)
         this.setState({
             selectedItem: '',
             selectedIndex: parseInt(index) + 1
@@ -348,9 +350,10 @@ export class Home extends Component {
 
         setTimeout(() => {
             this.setState({ showByeMessage: false });
+            window.location.reload()
         }, 5000);
 
-        this.props.history.push('/')
+        //this.props.history.push('/')
     }
 
     render() {
@@ -399,15 +402,15 @@ export class Home extends Component {
                 <div className="homeoptions">
                     <Card className="hometile hometile1" onClick={this.openModal1}>
                         <Card.Title>
-                            {this.state.isNewUser ? <span className="cardtitle">Your First Time Here</span>
-                                : <span className="cardtitle">The Usual/People's Choice</span>}
+                            {this.state.isNewUser ? <span className="cardtitle">People's Choice</span>
+                                : <span className="cardtitle">Your Favorite</span>}
                         </Card.Title>
                     </Card>
                     <Card className="hometile hometile2" onClick={this.openModal2}>
                         <Card.Title><span className="cardtitle">Recommended</span></Card.Title>
                     </Card>
                     <Card className="hometile hometile3" onClick={this.openModal3}>
-                        <Card.Title><span className="cardtitle">Beverages/Desserts</span></Card.Title>
+                        <Card.Title><span className="cardtitle">Beverages & Desserts</span></Card.Title>
                     </Card>
                     <Card className="hometile hometile4" onClick={this.openModal4}>
                         <Card.Title><span className="cardtitle">Explore the menu</span></Card.Title>
